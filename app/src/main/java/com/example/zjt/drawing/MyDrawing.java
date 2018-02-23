@@ -27,16 +27,13 @@ public class MyDrawing extends View {
     private float mX, mY;
     private List<PathInfo> mPathList = null;// 画图的线条
     private List<PathInfo> mEraseList = null;// 擦除的线条
-    private List<Bitmap> mBitmapList;
+    private List<Bitmap> mBitmapList;// 当前的页面
     private PathInfo mPathInfo = null;
     private Paint mPaint, mErasePaint;
-    private Bitmap mBitmap;
+    private Bitmap mBitmap, mCacheBitmap;
     private Canvas mCanvas;
-    private int mColor;
-    private int mWidth;
-    private int mMode = MODE_DRAW;
+    private int mColor, mWidth, mMode = MODE_DRAW, index = 0;
     private PorterDuffXfermode mPorterDuffXfermode;
-    private Bitmap mCacheBitmap;
 
     public MyDrawing(Context context) {
         this(context, null);
@@ -52,6 +49,7 @@ public class MyDrawing extends View {
         mPathList = new ArrayList<>();
         mEraseList = new ArrayList<>();
         mBitmapList = new ArrayList<>();
+        mBitmapList.add(Bitmap.createBitmap(360, 640, Bitmap.Config.ARGB_8888));
         mPaint = new Paint();
         mErasePaint = new Paint();
         mColor = Color.parseColor("#000000");
@@ -74,10 +72,6 @@ public class MyDrawing extends View {
         this.mColor = color;
     }
 
-    public void setMode(int mode) {
-        this.mMode = mode;
-    }
-
     public void switchMode() {
         if (this.mMode == MODE_DRAW) {
             this.mMode = MODE_ERASE;
@@ -89,12 +83,41 @@ public class MyDrawing extends View {
         }
     }
 
+    public void setIndex(int index) {
+        saveBitmap();
+        this.index = index;
+        mCacheBitmap = mBitmapList.get(index);
+        invalidate();
+    }
+
+    public void saveBitmap() {
+        createViewBitmap();
+        mPathList.clear();
+        mEraseList.clear();
+        mBitmapList.remove(index);
+        mBitmapList.add(index, mCacheBitmap);
+        createBitmap();
+    }
+
+    public void next() {
+        if (index + 1 > mBitmapList.size() - 1) {
+            mCacheBitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+            mBitmapList.add(mCacheBitmap);
+        }
+        setIndex(index + 1);
+    }
+
+    public void previous() {
+        if (index - 1 >= 0) {
+            setIndex(index - 1);
+        }
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         if (mBitmap == null) {
             createBitmap();
-            createViewBitmap();
         }
     }
 
@@ -115,8 +138,9 @@ public class MyDrawing extends View {
 
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mCacheBitmap != null)
+        if (mCacheBitmap != null) {
             mCanvas.drawBitmap(mCacheBitmap, 0, 0, null);
+        }
         if (mPathList != null) {
             for (int i = 0; i < mPathList.size(); i++) {
                 PathInfo pathInfo = mPathList.get(i);
