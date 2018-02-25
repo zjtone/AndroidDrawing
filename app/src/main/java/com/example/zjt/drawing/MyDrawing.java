@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.support.annotation.Nullable;
@@ -27,7 +28,6 @@ public class MyDrawing extends View {
     private float mX, mY;
     private List<PathInfo> mPathList = null;// 画图的线条
     private List<PathInfo> mEraseList = null;// 擦除的线条
-    private List<Bitmap> mBitmapList;// 当前的页面
     private PathInfo mPathInfo = null;
     private Paint mPaint, mErasePaint;
     private Bitmap mBitmap, mCacheBitmap;
@@ -36,20 +36,23 @@ public class MyDrawing extends View {
     private PorterDuffXfermode mPorterDuffXfermode;
 
     public MyDrawing(Context context) {
-        this(context, null);
-
+        super(context);
+        init();
     }
 
     public MyDrawing(Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
+        init();
     }
 
     public MyDrawing(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init() {
         mPathList = new ArrayList<>();
         mEraseList = new ArrayList<>();
-        mBitmapList = new ArrayList<>();
-        mBitmapList.add(Bitmap.createBitmap(360, 640, Bitmap.Config.ARGB_8888));
         mPaint = new Paint();
         mErasePaint = new Paint();
         mColor = Color.parseColor("#000000");
@@ -83,36 +86,6 @@ public class MyDrawing extends View {
         }
     }
 
-    public void setIndex(int index) {
-        saveBitmap();
-        this.index = index;
-        mCacheBitmap = mBitmapList.get(index);
-        invalidate();
-    }
-
-    public void saveBitmap() {
-        createViewBitmap();
-        mPathList.clear();
-        mEraseList.clear();
-        mBitmapList.remove(index);
-        mBitmapList.add(index, mCacheBitmap);
-        createBitmap();
-    }
-
-    public void next() {
-        if (index + 1 > mBitmapList.size() - 1) {
-            mCacheBitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-            mBitmapList.add(mCacheBitmap);
-        }
-        setIndex(index + 1);
-    }
-
-    public void previous() {
-        if (index - 1 >= 0) {
-            setIndex(index - 1);
-        }
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -122,7 +95,7 @@ public class MyDrawing extends View {
     }
 
     private void createBitmap() {
-        mBitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        mBitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_4444);
         mCanvas = new Canvas(mBitmap);
     }
 
@@ -163,7 +136,6 @@ public class MyDrawing extends View {
     private void touch_down(float x, float y) {
         mX = x;
         mY = y;
-        Log.d("tag", x + " " + y);
 
         mPathInfo = new PathInfo();
         mPathInfo.path.moveTo(x, y);
