@@ -1,6 +1,6 @@
 
 ## 前言
-[博客地址](https://blog.csdn.net/qq_34911465/article/details/79344254) <br>
+[博客地址](http://blog.csdn.net/qq_34911465/article/details/79344254) <br>
 之前写过一个Android的画图类，自定义View实现的，其中的擦除效果很不自然，每次擦除都会将线条整条删除，而不是手指指到哪里就擦除哪里，很不自然。一直没有想明白如何做，直到看到了这篇文章：![刮刮卡效果](http://blog.csdn.net/lmj623565791/article/details/40162163)。 结合文章的方法和自己的理解进行了重写，完成了安卓的画图效果。
 
 ![画图](http://img.blog.csdn.net/20180221214552816?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMzQ5MTE0NjU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
