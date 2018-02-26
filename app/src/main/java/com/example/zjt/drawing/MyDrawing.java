@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -34,6 +35,7 @@ public class MyDrawing extends View {
     private Canvas mCanvas;
     private int mColor, mWidth, mMode = MODE_DRAW, index = 0;
     private PorterDuffXfermode mPorterDuffXfermode;
+    private Rect mRect;
 
     public MyDrawing(Context context) {
         super(context);
@@ -58,6 +60,7 @@ public class MyDrawing extends View {
         mColor = Color.parseColor("#000000");
         mWidth = 20;
         mPorterDuffXfermode = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
+        mRect = new Rect();
         setPaintStyle(mPaint);
         setPaintStyle(mErasePaint);
     }
@@ -73,6 +76,12 @@ public class MyDrawing extends View {
 
     public void setColor(int color) {
         this.mColor = color;
+    }
+
+    public void setWidth(int width){
+        this.mWidth = width;
+        mPaint.setStrokeWidth(mWidth);
+        mErasePaint.setStrokeWidth(mWidth);
     }
 
     public void switchMode() {
@@ -111,15 +120,18 @@ public class MyDrawing extends View {
 
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        // 提高速度
+        canvas.clipRect(getPaddingLeft(), getPaddingTop(),
+                getRight(), getBottom());
         if (mCacheBitmap != null) {
-            mCanvas.drawBitmap(mCacheBitmap, 0, 0, null);
+            canvas.drawBitmap(mCacheBitmap, 0, 0, null);
         }
+        canvas.getClipBounds(mRect);
         if (mPathList != null) {
             for (int i = 0; i < mPathList.size(); i++) {
                 PathInfo pathInfo = mPathList.get(i);
                 mPaint.setStrokeWidth(pathInfo.width);
                 mPaint.setColor(pathInfo.color);
-
                 mCanvas.drawPath(pathInfo.path, mPaint);
             }
         }
