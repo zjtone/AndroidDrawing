@@ -12,6 +12,13 @@
         android:layout_height="wrap_content"
         android:text="进入擦除" />
 
+    <Button
+        android:id="@+id/clear"
+        android:layout_width="wrap_content"
+        android:layout_toEndOf="@id/button"
+        android:layout_height="wrap_content"
+        android:text="清空屏幕"/>
+
     <com.example.zjt.drawing.MyDrawing
         android:id="@+id/card"
         android:layout_width="match_parent"

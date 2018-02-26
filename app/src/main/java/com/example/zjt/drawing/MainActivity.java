@@ -14,38 +14,44 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private Button button;
-    private MyDrawing card;
-    private RecyclerView mWidthRecycler;
+    private Button drawOrErase,clearButton;
+    private MyDrawing drawing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        button = findViewById(R.id.button);
-        card = findViewById(R.id.card);
-        button.setOnClickListener(new View.OnClickListener() {
+        drawOrErase = findViewById(R.id.button);
+        drawing = findViewById(R.id.card);
+        drawOrErase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                card.switchMode();
-                if (button.getText().toString().equalsIgnoreCase("进入擦除"))
-                    button.setText("进入画图");
+                drawing.switchMode();
+                if (drawOrErase.getText().toString().equalsIgnoreCase("进入擦除"))
+                    drawOrErase.setText("进入画图");
                 else
-                    button.setText("进入擦除");
+                    drawOrErase.setText("进入擦除");
+            }
+        });
+        clearButton = findViewById(R.id.clear);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawing.clear();
             }
         });
         initWidthRecycler();
     }
 
     private void initWidthRecycler() {
-        mWidthRecycler = findViewById(R.id.widthRecyclerView);
+        RecyclerView mWidthRecycler = findViewById(R.id.widthRecyclerView);
         final List<Integer> widthList = new ArrayList<>();
         initWidthData(widthList);
         WidthAdapter widthAdapter = new WidthAdapter(this,widthList);
         widthAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                card.setWidth(widthList.get(position));
+                drawing.setWidth(widthList.get(position));
                 Toast.makeText(MainActivity.this, "" + widthList.get(position), Toast.LENGTH_SHORT).show();
             }
         });

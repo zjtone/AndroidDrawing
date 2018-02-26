@@ -33,7 +33,7 @@ public class MyDrawing extends View {
     private Paint mPaint, mErasePaint;
     private Bitmap mBitmap, mCacheBitmap;
     private Canvas mCanvas;
-    private int mColor, mWidth, mMode = MODE_DRAW, index = 0;
+    private int mColor, mWidth, mMode = MODE_DRAW;
     private PorterDuffXfermode mPorterDuffXfermode;
     private Rect mRect;
 
@@ -63,6 +63,14 @@ public class MyDrawing extends View {
         mRect = new Rect();
         setPaintStyle(mPaint);
         setPaintStyle(mErasePaint);
+    }
+
+    public void clear(){
+        createBitmap();
+        mCacheBitmap = null;
+        mPathList.clear();
+        mEraseList.clear();
+        invalidate();
     }
 
     private void setPaintStyle(Paint paint) {
